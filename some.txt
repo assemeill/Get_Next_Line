@@ -1,1 +1,3 @@
 Hello, World!
+Some text here
+And one more new line

@@ -2,7 +2,7 @@
 #include "get_next_line.h"
 #include <stdio.h>
 
-static void	ft_write(char *tmp, char *left, char **line)
+static void	ft_write(char *tmp, char **left, char **line)
 {
 	int i;
 
@@ -14,12 +14,12 @@ static void	ft_write(char *tmp, char *left, char **line)
 	i++;
 	if (tmp[i] != '\0' && tmp[i] != '\n')
 	{
-		if (!(left))
-			left = ft_strdup(&tmp[i]);
-		else if (*left == '\n')
+		if (!(*left))
+			*left = ft_strdup(&tmp[i]);
+		else if (**left == '\n')
 		{
-			left++;
-			left = ft_strjoin(left, &tmp[i]);
+			(*left)++;
+			*left = ft_strjoin(*left, &tmp[i]);
 		}
 	}
 }
@@ -28,7 +28,7 @@ int		ft_return(char *left, int number, char **line)
 {
 	if (number < 0)
 		return(-1);
-	else if ((number == 1) && !left && !(*line))
+	else if ((number == 0) && !left && !(*line))
 		return(0);
 	else
 		return (1);
@@ -40,9 +40,9 @@ int		get_next_line(const int fd, char **line)
 	char		*tmp;
 	char		buf[BUFF_SIZE + 1];
 	int			number;
-	int			i;
+//	int			i;
 
-	i = 0;
+//	i = 0;
 	tmp = NULL;
 	*line = NULL;
 	if ((read(fd, buf, 0) < 0) || !fd)
@@ -50,10 +50,14 @@ int		get_next_line(const int fd, char **line)
 	if (left[fd])
 	{
 		tmp = left[fd];
-		while (left[fd][i] != '\n' && left[fd][i] != '\0')
-			i++;
-		if (left[fd][i] == '\0')
-			ft_strdel(&left[fd]);
+		ft_strdel(&left[fd]);
+		//copy new string from here. Check not to re-do anything
+		if (ft_strchr(tmp, '\n'))
+			left[fd] = ft_strdup(ft_strchr(tmp, '\n'));
+	//	while (left[fd][i] != '\n' && left[fd][i] != '\0')
+	//		i++;
+	//	if (left[fd][i] == '\0')
+	//		ft_strdel(&left[fd]);
 	}
 	while ((number = read(fd, buf, BUFF_SIZE)) > 0)
 	{
@@ -69,7 +73,7 @@ int		get_next_line(const int fd, char **line)
 			break ;
 	}
 	if (tmp)
-		ft_write(tmp, &left[fd][i], line);
+		ft_write(tmp, &(left[fd]), line);
 	return (ft_return(left[fd], number, line));
 }
 

@@ -14,13 +14,16 @@ static void	ft_write(char *tmp, char **left, char **line)
 	i++;
 	if (tmp[i] != '\0' && tmp[i] != '\n')
 	{
-		if (!(*left))
-			*left = ft_strdup(&tmp[i]);
-		else if (**left == '\n')
-		{
-			(*left)++;
-			*left = ft_strjoin(*left, &tmp[i]);
-		}
+		if (*left)
+			ft_strdel(left);
+		*left = ft_strdup(&tmp[i]);
+//		if (!(*left))
+//			*left = ft_strdup(&tmp[i]);
+//		else if (**left == '\n')
+//		{
+//			(*left)++;
+//			*left = ft_strjoin(*left, &tmp[i]);
+//		}
 	}
 }
 
@@ -40,9 +43,7 @@ int		get_next_line(const int fd, char **line)
 	char		*tmp;
 	char		buf[BUFF_SIZE + 1];
 	int			number;
-//	int			i;
 
-//	i = 0;
 	tmp = NULL;
 	*line = NULL;
 	if ((read(fd, buf, 0) < 0) || !fd)
@@ -51,13 +52,8 @@ int		get_next_line(const int fd, char **line)
 	{
 		tmp = left[fd];
 		ft_strdel(&left[fd]);
-		//copy new string from here. Check not to re-do anything
-		if (ft_strchr(tmp, '\n'))
-			left[fd] = ft_strdup(ft_strchr(tmp, '\n'));
-	//	while (left[fd][i] != '\n' && left[fd][i] != '\0')
-	//		i++;
-	//	if (left[fd][i] == '\0')
-	//		ft_strdel(&left[fd]);
+//		if (ft_strchr(tmp, '\n'))
+//			left[fd] = ft_strdup(ft_strchr(tmp, '\n'));
 	}
 	while ((number = read(fd, buf, BUFF_SIZE)) > 0)
 	{
@@ -75,52 +71,4 @@ int		get_next_line(const int fd, char **line)
 	if (tmp)
 		ft_write(tmp, &(left[fd]), line);
 	return (ft_return(left[fd], number, line));
-}
-
-#include <string.h>
-#include <stdio.h>
-#include <fcntl.h>
-#include <unistd.h>
-
-/*
-** 2 lines with 8 chars with Line Feed
-*/
-
-int				main(void)
-{
-	char		*line;
-	int			fd;
-	int			ret;
-	int			count_lines;
-	char		*filename;
-	int			errors;
-
-	filename = "gnl1_2.txt";
-	fd = open(filename, O_RDONLY);
-	if (fd > 2)
-	{
-		count_lines = 0;
-		errors = 0;
-		line = NULL;
-		while ((ret = get_next_line(fd, &line)) > 0)
-		{
-			if (count_lines == 0 && strcmp(line, "1234567") != 0)
-				errors++;
-			if (count_lines == 1 && strcmp(line, "abcdefg") != 0)
-				errors++;
-			count_lines++;
-			if (count_lines > 50)
-				break ;
-		}
-		close(fd);
-		if (count_lines != 2)
-			printf("-> must have returned '1' twice instead of %d time(s)\n", count_lines);
-		if (errors > 0)
-			printf("-> must have read \"1234567\" and \"abcdefg\"\n");
-		if (count_lines == 2 && errors == 0)
-			printf("OK\n");
-	}
-	else
-		printf("An error occured while opening file %s\n", filename);
-	return (0);
 }

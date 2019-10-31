@@ -1,93 +1,122 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: aszhilki <marvin@42.fr>                    +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/10/11 14:17:53 by aszhilki          #+#    #+#             */
-/*   Updated: 2019/10/23 16:30:11 by aszhilki         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
-#include "libft.h"
-//#include "get_next_line.h"
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
+#include "libft/libft.h"
+#include "get_next_line.h"
 #include <stdio.h>
-#include <fcntl.h>
 
-#define BUF_SIZE 20 
-
-static char	*ft_store(char *buf)
+static void	ft_write(char *tmp, char *left, char **line)
 {
-	int		i;
-	char	*tmp;
+	int i;
 
 	i = 0;
-	while (buf[i] != '\n')
+	while (tmp[i] != '\n' && tmp[i] != '\0')
 		i++;
-	buf[i++] = '\0';
-	tmp = ft_strdup(&(buf[i]));
-	return (tmp);
+	*line = ft_strsub(tmp, 0, i);
+	printf("%s\n", *line);
+	i++;
+	if (tmp[i] != '\0' && tmp[i] != '\n')
+	{
+		if (!(left))
+			left = ft_strdup(&tmp[i]);
+		else if (*left == '\n')
+		{
+			left++;
+			left = ft_strjoin(left, &tmp[i]);
+		}
+	}
 }
 
-static void	ft_write(char **line, char *buf, char *left)
+int		ft_return(char *left, int number, char **line)
 {
-	if ((!(*line)) && (!(*left)))
-		*line = ft_strdup(buf);
-	else if ((!(*line)) && *left)
+	if (number < 0)
+		return(-1);
+	else if ((number == 1) && !left && !(*line))
+		return(0);
+	else
+		return (1);
+}
+
+int		get_next_line(const int fd, char **line)
+{
+	static char	*left[FD_MAX];
+	char		*tmp;
+	char		buf[BUFF_SIZE + 1];
+	int			number;
+	int			i;
+
+	i = 0;
+	tmp = NULL;
+	*line = NULL;
+	if ((read(fd, buf, 0) < 0) || !fd)
+		return (-1);
+	if (left[fd])
 	{
-		*line = ft_strdup(left);
-		*line = ft_strjoin(*line, buf);
+		tmp = left[fd];
+		while (left[fd][i] != '\n' && left[fd][i] != '\0')
+			i++;
+		if (left[fd][i] == '\0')
+			ft_strdel(&left[fd]);
+	}
+	while ((number = read(fd, buf, BUFF_SIZE)) > 0)
+	{
+		buf[number] = '\0';
+		if (!tmp)
+			tmp = ft_strdup(buf);
+		else
+		{
+			//free mem
+			tmp = ft_strjoin(tmp, buf);
+		}
+		if (strchr(buf, '\n'))
+			break ;
+	}
+	if (tmp)
+		ft_write(tmp, &left[fd][i], line);
+	return (ft_return(left[fd], number, line));
+}
+
+#include <string.h>
+#include <stdio.h>
+#include <fcntl.h>
+#include <unistd.h>
+
+/*
+** 2 lines with 8 chars with Line Feed
+*/
+
+int				main(void)
+{
+	char		*line;
+	int			fd;
+	int			ret;
+	int			count_lines;
+	char		*filename;
+	int			errors;
+
+	filename = "gnl1_2.txt";
+	fd = open(filename, O_RDONLY);
+	if (fd > 2)
+	{
+		count_lines = 0;
+		errors = 0;
+		line = NULL;
+		while ((ret = get_next_line(fd, &line)) > 0)
+		{
+			if (count_lines == 0 && strcmp(line, "1234567") != 0)
+				errors++;
+			if (count_lines == 1 && strcmp(line, "abcdefg") != 0)
+				errors++;
+			count_lines++;
+			if (count_lines > 50)
+				break ;
+		}
+		close(fd);
+		if (count_lines != 2)
+			printf("-> must have returned '1' twice instead of %d time(s)\n", count_lines);
+		if (errors > 0)
+			printf("-> must have read \"1234567\" and \"abcdefg\"\n");
+		if (count_lines == 2 && errors == 0)
+			printf("OK\n");
 	}
 	else
-		*line = ft_strjoin(*line, buf);
-	return ;
-}
-
-int			get_next_line(const int fd, char **line)
-{
-	char 		buf[BUF_SIZE + 1];
-	static char left;
-	char 		*tmp;
-/* check if file can be read  */
-	if (fd < 0 || read(fd, buf, 0))
-		return (-1);
-	*line = NULL;
-	tmp = NULL;
-	if (left)
-		tmp = &left;
-	if (read(fd, buf, BUF_SIZE) > 0)
-	{
-/* check if there is new line in buf  */
-		buf[BUF_SIZE] = '\0';
-		while (!(ft_strstr(buf, "\n")))
-		{
-			ft_write(line, buf, tmp);
-			read(fd, buf, BUF_SIZE);
-		}
-		tmp = ft_store(buf);
-		ft_write(line, buf, &left);
-		while(left)
-			left++;
-		ft_strcat(&left, tmp);
-	}
-	return(1);
-}
-
-int		main(void)
-{
-	char	*line;
-	int		fd;
-
-	fd = open("some.txt", O_RDONLY);
-	get_next_line(fd, &line);
-	printf("1 %s\n", line);
-	//ft_strclr(line);
-	get_next_line(fd, &line);
-	printf("2 %s\n", line);
-	get_next_line(fd, &line);
-	printf("3 %s\n", line);
+		printf("An error occured while opening file %s\n", filename);
+	return (0);
 }

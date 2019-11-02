@@ -6,7 +6,7 @@
 /*   By: aszhilki <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/01 18:46:25 by aszhilki          #+#    #+#             */
-/*   Updated: 2019/11/02 13:57:59 by aszhilki         ###   ########.fr       */
+/*   Updated: 2019/11/02 14:27:18 by aszhilki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,10 +45,23 @@ static int		ft_return(char *left, int number, char **line)
 		return (1);
 }
 
+static void		ft_keep(char **tmp, char *buf)
+{
+	char *save;
+
+	if (!*tmp)
+		*tmp = ft_strdup(buf);
+	else
+	{
+		save = *tmp;
+		*tmp = ft_strjoin(*tmp, buf);
+		ft_strdel(&save);
+	}
+}
+
 int				get_next_line(const int fd, char **line)
 {
 	static char	*left[FD_MAX];
-	char		*save;
 	char		*tmp;
 	char		buf[BUFF_SIZE + 1];
 	int			number;
@@ -65,14 +78,7 @@ int				get_next_line(const int fd, char **line)
 	while ((number = read(fd, buf, BUFF_SIZE)) > 0)
 	{
 		buf[number] = '\0';
-		if (!tmp)
-			tmp = ft_strdup(buf);
-		else
-		{
-			save = tmp;
-			tmp = ft_strjoin(tmp, buf);
-			ft_strdel(&save);
-		}
+		ft_keep(&tmp, buf);
 		if (ft_strchr(buf, '\n'))
 			break ;
 	}

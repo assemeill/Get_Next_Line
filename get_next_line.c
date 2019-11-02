@@ -15,7 +15,7 @@ static void	ft_write(char **tmp, char **left, char **line)
 		*line = NULL;
 	*line = ft_strsub(*tmp, 0, i);
 	i++;
-	if ((*tmp)[i] != '\0')
+	if ((*tmp)[i] != '\0' && ft_strchr(*tmp, '\n'))
 	{
 		if (*left)
 			ft_strdel(&(*left));

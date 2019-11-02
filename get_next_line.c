@@ -15,10 +15,10 @@ static void	ft_write(char **tmp, char **left, char **line)
 		*line = NULL;
 	*line = ft_strsub(*tmp, 0, i);
 	i++;
-	if ((*tmp)[i] != '\0' && (*tmp)[i] != '\n')
+	if ((*tmp)[i] != '\0')
 	{
 		if (*left)
-			ft_strdel(left);
+			ft_strdel(&(*left));
 		*left = ft_strdup(*tmp + i);
 	}
 	ft_strdel(tmp);
@@ -28,7 +28,7 @@ int		ft_return(char *left, int number, char **line)
 {
 	if (number < 0)
 		return (-1);
-	else if ((number == 0) && !left && !(*line))
+	else if (number == 0 && !left && !(*line))
 		return (0);
 	else
 		return (1);
@@ -46,8 +46,6 @@ int		get_next_line(const int fd, char **line)
 	if ((read(fd, buf, 0) < 0) || (fd < 0 || line == NULL))
 		return (-1);
 	*line = NULL;
-	if (line)
-		ft_strdel(line);
 	if (left[fd])
 	{
 		tmp = ft_strdup(left[fd]);
@@ -69,7 +67,5 @@ int		get_next_line(const int fd, char **line)
 	}
 	if (tmp)
 		ft_write(&tmp, &(left[fd]), line);
-	// need to send pointer to tmp instead of creating local copy
 	return (ft_return(left[fd], number, line));
 }
-

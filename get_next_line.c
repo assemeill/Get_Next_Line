@@ -1,10 +1,21 @@
-#include "libft/libft.h"
-#include "get_next_line.h"
-#include <stdio.h>
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: aszhilki <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2019/11/01 18:46:25 by aszhilki          #+#    #+#             */
+/*   Updated: 2019/11/01 18:48:09 by aszhilki         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-static void	ft_write(char **tmp, char **left, char **line)
+#include "libft.h"
+#include "get_next_line.h"
+
+static void		ft_write(char **tmp, char **left, char **line)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	while ((*tmp)[i] != '\n' && (*tmp)[i] != '\0')
@@ -24,7 +35,7 @@ static void	ft_write(char **tmp, char **left, char **line)
 	ft_strdel(tmp);
 }
 
-int		ft_return(char *left, int number, char **line)
+int				ft_return(char *left, int number, char **line)
 {
 	if (number < 0)
 		return (-1);
@@ -34,7 +45,7 @@ int		ft_return(char *left, int number, char **line)
 		return (1);
 }
 
-int		get_next_line(const int fd, char **line)
+int				get_next_line(const int fd, char **line)
 {
 	static char	*left[FD_MAX];
 	char		*save;

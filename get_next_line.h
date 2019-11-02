@@ -6,7 +6,7 @@
 /*   By: aszhilki <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/11 13:53:59 by aszhilki          #+#    #+#             */
-/*   Updated: 2019/10/17 19:23:57 by aszhilki         ###   ########.fr       */
+/*   Updated: 2019/11/02 13:24:31 by aszhilki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 # include <stdlib.h>
 
 # define BUFF_SIZE 32
+# define FD_MAX 256
 
 int		get_next_line(const int fd, char **line);
 

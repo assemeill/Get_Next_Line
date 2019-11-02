@@ -6,11 +6,11 @@
 /*   By: aszhilki <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/01 18:46:25 by aszhilki          #+#    #+#             */
-/*   Updated: 2019/11/01 18:48:09 by aszhilki         ###   ########.fr       */
+/*   Updated: 2019/11/02 13:57:59 by aszhilki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "libft/libft.h"
 #include "get_next_line.h"
 
 static void		ft_write(char **tmp, char **left, char **line)
@@ -35,7 +35,7 @@ static void		ft_write(char **tmp, char **left, char **line)
 	ft_strdel(tmp);
 }
 
-int				ft_return(char *left, int number, char **line)
+static int		ft_return(char *left, int number, char **line)
 {
 	if (number < 0)
 		return (-1);
